@@ -270,7 +270,23 @@ class Lexer(object):
 
 
     def __MakeString(self):
-        ...
+        line, colm = self.__line, self.__colm
+        open, close = self.__MoveForward(), None
+
+        string = ""
+        close = self.__ahead
+
+        while not self.__IsEof() and (open != close):
+            ...
+        
+        return Token(
+            Token.STR,
+            string,
+            line,
+            colm,
+            self.__lineBefore,
+            self.__colmBefore
+        )
 
 
     def __MakeEof(self):
@@ -305,5 +321,3 @@ class Lexer(object):
 
     def __IsEof(self):
         return self.__index >= len(self.__fileCode)
-
-
