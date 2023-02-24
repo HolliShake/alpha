@@ -1,0 +1,6 @@
+module "stdlib.h";
+
+fn[usize] sizeof(any:*void);
+
+fn[*void] malloc(size:usize);
+fn[*void] realloc(any:*void, newsize:usize);

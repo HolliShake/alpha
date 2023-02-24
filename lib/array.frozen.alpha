@@ -1,0 +1,21 @@
+
+import * from clib;
+
+struct Array <T> {
+
+    private elements:*T;
+    private index:int;
+
+    fn[Self] new(self) {
+        var x:Self(1);
+            x.index = 1;
+        return x;
+    }
+
+    fn[void] push(self, element:T) {
+        self.index++;
+    }
+
+}
+
+
