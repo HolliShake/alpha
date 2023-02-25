@@ -9,7 +9,8 @@ class Token:
     DBL = 0x04
     CHR = 0x05
     STR = 0x06
-    EOF = 0x07
+    SYM = 0x07
+    EOF = 0x08
 
     def __init__(self,
         tokenType, 

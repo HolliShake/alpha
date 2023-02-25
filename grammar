@@ -28,3 +28,15 @@ fn[int] main(a:int, b:int, {a:2, b:3})
 }
 
 
+class Dog {
+
+    public Dog() {
+
+    }
+
+}
+
+
+fn main() {
+
+}

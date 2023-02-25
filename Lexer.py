@@ -1,4 +1,3 @@
-
 from Token import Token
 from Error import Error
 
@@ -66,16 +65,26 @@ class Checker:
         return ((c == 48) or (c == 49))
 
 
+    @staticmethod
+    def IsCharacter(char):
+        return (ord(char) == 39)
+    
+
+    @staticmethod
+    def IsString(char):
+        return (ord(char) == 34)
+
+
 
 class Lexer(object):
 
 
     def __init__(self, 
-        gblstate,
+        gblState,
         filePath,
         fileCode
     ):
-        self.__globalState = gblstate
+        self.__globalState = gblState
         self.__filePath    = filePath
         self.__fileCode    = fileCode
 
@@ -269,6 +278,83 @@ class Lexer(object):
         return part
 
 
+    def __MakeCharacter(self):
+        line, colm = self.__line, self.__colm
+        open, close = self.__MoveForward(), None
+
+        character = ""
+        close = self.__ahead
+
+        if  not self.__IsEof() and (open != close):
+            
+            if  self.__ahead == "\\":
+                character += self.__MoveForward()
+
+                if  self.__ahead == "b":
+                    character += "\b"
+
+                elif self.__ahead == "n":
+                    character += "\n"
+
+                elif self.__ahead == "t":
+                    character += "\t"
+
+                elif self.__ahead == "r":
+                    character += "\r"
+
+                elif self.__ahead == "0":
+                    character += "\0"
+                
+                elif self.__ahead == "\"":
+                    character += "\""
+                
+                elif self.__ahead == "\'":
+                    character += "\'"
+            
+                self.__MoveForward()
+
+            else:
+                string += self.__MoveForward()
+            
+            close = self.__ahead
+        
+
+        if  open != close:
+            # error
+            Error.RaiseError(
+                self.__filePath,
+                self.__fileCode,
+                "unterminated character literal",
+                line, 
+                colm,
+                self.__lineBefore,
+                self.__colmBefore
+            )
+        
+        self.__MoveForward()
+
+        if  len(character) != 1:
+            # error
+            Error.RaiseError(
+                self.__filePath,
+                self.__fileCode,
+                "invalid character literal \"%s\"" % character,
+                line, 
+                colm,
+                self.__lineBefore,
+                self.__colmBefore
+            )
+        
+        return Token(
+            Token.CHR,
+            string,
+            line,
+            colm,
+            self.__lineBefore,
+            self.__colmBefore
+        )
+
+
     def __MakeString(self):
         line, colm = self.__line, self.__colm
         open, close = self.__MoveForward(), None
@@ -277,11 +363,196 @@ class Lexer(object):
         close = self.__ahead
 
         while not self.__IsEof() and (open != close):
-            ...
+            
+            if  self.__ahead == "\n":
+                break
+            
+            if  self.__ahead == "\\":
+                string += self.__MoveForward()
+
+                if  self.__ahead == "b":
+                    string += "\b"
+
+                elif self.__ahead == "n":
+                    string += "\n"
+
+                elif self.__ahead == "t":
+                    string += "\t"
+
+                elif self.__ahead == "r":
+                    string += "\r"
+
+                elif self.__ahead == "0":
+                    string += "\0"
+                
+                elif self.__ahead == "\"":
+                    string += "\""
+                
+                elif self.__ahead == "\'":
+                    string += "\'"
+            
+                self.__MoveForward()
+
+            else:
+                string += self.__MoveForward()
+            
+            close = self.__ahead
+        
+
+        if  open != close:
+            # error
+            Error.RaiseError(
+                self.__filePath,
+                self.__fileCode,
+                "unterminated string literal",
+                line, 
+                colm,
+                self.__lineBefore,
+                self.__colmBefore
+            )
+        
+        self.__MoveForward()
         
         return Token(
             Token.STR,
             string,
+            line,
+            colm,
+            self.__lineBefore,
+            self.__colmBefore
+        )
+
+
+    def __MakeOperator(self):
+        line, colm = self.__line, self.__colm
+        operator = ""
+
+        if  self.__ahead == "(" or \
+            self.__ahead == "(" or \
+            self.__ahead == "[" or \
+            self.__ahead == "]" or \
+            self.__ahead == "{" or \
+            self.__ahead == "}" or \
+            self.__ahead == ";":
+            operator = self.__MoveForward()
+        
+        elif self.__ahead == "*":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "*":
+                operator += self.__MoveForward()
+
+            if  self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "/":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "+":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "+":
+                operator += self.__MoveForward()
+
+            elif self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "-":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "-":
+                operator += self.__MoveForward()
+
+            elif self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "<":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "<":
+                operator += self.__MoveForward()
+
+            if self.__ahead == "=":
+                operator += self.__MoveForward()
+
+        elif self.__ahead == ">":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == ">":
+                operator += self.__MoveForward()
+
+            if self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "!":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "=":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "&":
+            operator = self.__MoveForward()
+
+            if self.__ahead == "&":
+                operator += self.__MoveForward()
+            
+            elif self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "|":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "|":
+                operator += self.__MoveForward()
+
+            elif self.__ahead == "=":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == "^":
+            operator = self.__MoveForward()
+
+            if self.__ahead == "=":
+                operator += self.__MoveForward()
+
+        elif self.__ahead == "?":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == "?":
+                operator += self.__MoveForward()
+
+            elif self.__ahead == ".":
+                operator += self.__MoveForward()
+        
+        elif self.__ahead == ":":
+            operator = self.__MoveForward()
+
+            if  self.__ahead == ":":
+                operator += self.__MoveForward()
+        
+        else:
+            # error
+            Error.RaiseError(
+                self.__filePath,
+                self.__fileCode,
+                "invalid or unknown token \"%s\"" % self.__ahead,
+                line, 
+                colm,
+                self.__lineBefore,
+                self.__colmBefore
+            )
+
+        return Token(
+            Token.SYM,
+            operator,
             line,
             colm,
             self.__lineBefore,
@@ -312,9 +583,15 @@ class Lexer(object):
             
             elif Checker.IsNumber(self.__ahead):
                 return self.__MakeNumber()
+
+            elif Checker.IsCharacter(self.__ahead):
+                return self.__MakeCharacter()
             
             elif Checker.IsString(self.__ahead):
                 return self.__MakeString()
+        
+            else:
+                return self.__MakeOperator()
 
         return self.__MakeEof()
 
