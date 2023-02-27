@@ -16,7 +16,9 @@ fn[int] parse<T>({a:2, b:3})
 }
 
 
-fn[int] main(a:int, b:int, {a:2, b:3})
+var x:string = malloc(sizeof(int)*2);
+
+fn main(a:int, b:int, {a:2, b:3}) -> int
 {
     main<int>(2, 3);
 
@@ -26,16 +28,6 @@ fn[int] main(a:int, b:int, {a:2, b:3})
 
     println();
 }
-
-
-class Dog {
-
-    public Dog() {
-
-    }
-
-}
-
 
 fn main() {
 
