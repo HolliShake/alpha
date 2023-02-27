@@ -10,21 +10,20 @@ struct Animal <T> {
 
 var x:int;
 
-fn[int] parse<T>({a:2, b:3})
+fn parse({a:2, b:3}) -> int
 {
     println(a, b);
 }
 
 
-var x:string = malloc(sizeof(int)*2);
+var x:string = malloc(sizeof(int) * 2);
 
 fn main(a:int, b:int, {a:2, b:3}) -> int
 {
-    main<int>(2, 3);
+    main(2, 3);
 
     var x:*string(5);
-
-    x = 2;
+        x = 2;
 
     println();
 }
