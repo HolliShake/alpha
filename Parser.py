@@ -52,6 +52,7 @@ class Parser(object):
     def __DatatypeOrVariableTypeBase(self, ttype, tnode):
         value = self.lookahead.tokenValue
         consumeT(self, ttype)
+        
         return Node(
             tnode,
             value
